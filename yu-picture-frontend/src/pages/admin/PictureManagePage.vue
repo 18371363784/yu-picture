@@ -1,5 +1,5 @@
 <template>
-  <div id="pictureManagePage">
+  <div id="pictureManagePage" class="yx-page-shell yx-table-wrap">
     <a-flex justify="space-between">
       <h2>图片管理</h2>
       <a-space>

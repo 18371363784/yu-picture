@@ -23,7 +23,6 @@ import com.yupi.yupicturebackend.model.vo.LoginUserVO;
 import com.yupi.yupicturebackend.model.vo.UserVO;
 import com.yupi.yupicturebackend.service.UserService;
 import com.yupi.yupicturebackend.mapper.UserMapper;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,6 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -255,9 +253,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     // 文件读写锁（确保并发安全）
     private final ReentrantLock fileLock = new ReentrantLock();
 
-    // VIP 角色常量（根据你的需求自定义）
-    private static final String VIP_ROLE = "vip";
-
     /**
      * 兑换会员
      *
@@ -344,7 +339,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         updateUser.setId(user.getId());
         updateUser.setVipExpireTime(expireTime); // 设置过期时间
         updateUser.setVipCode(usedVipCode);     // 记录使用的兑换码
-        updateUser.setUserRole(VIP_ROLE);       // 修改用户角色
+        updateUser.setUserRole(UserConstant.VIP_ROLE); // 修改用户角色
 
         // 执行更新
         boolean updated = this.updateById(updateUser);

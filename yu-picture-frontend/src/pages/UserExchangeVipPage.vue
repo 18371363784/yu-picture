@@ -1,6 +1,7 @@
 <template>
-  <div id="vipExchangePage">
-    <h2 style="margin-bottom: 16px">会员码兑换</h2>
+  <div id="vipExchangePage" class="yx-page-shell vip-shell">
+    <h2 class="yx-page-title">会员码兑换</h2>
+    <p class="yx-page-sub">输入有效兑换码即可开通会员权益</p>
     <!-- 兑换码表单 -->
     <a-form name="formData" layout="vertical" :model="formData" @finish="handleSubmit">
       <a-form-item name="vipCode" label="兑换码">
@@ -11,7 +12,7 @@
         />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 100%" :loading="loading">
+        <a-button type="primary" html-type="submit" block size="large" :loading="loading">
           兑换
         </a-button>
       </a-form-item>
@@ -23,7 +24,10 @@
 import { reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { exchangeVipUsingPost } from '@/api/userController.ts'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { useRouter } from 'vue-router'
+
+const loginUserStore = useLoginUserStore()
 
 // 表单数据
 const formData = reactive<API.VipExchangeRequest>({
@@ -56,7 +60,7 @@ const handleSubmit = async () => {
     // 操作成功
     if (res.data.code === 0 && res.data.data) {
       message.success('兑换成功！')
-      // 跳转到主页或其他页面
+      await loginUserStore.fetchLoginUser()
       router.push({
         path: `/`,
       })
@@ -73,7 +77,11 @@ const handleSubmit = async () => {
 
 <style scoped>
 #vipExchangePage {
-  max-width: 720px;
+  max-width: 520px;
   margin: 0 auto;
+}
+
+.vip-shell {
+  padding: 2rem 1.75rem;
 }
 </style>

@@ -34,6 +34,12 @@
                       我的空间
                     </router-link>
                   </a-menu-item>
+                  <a-menu-item>
+                    <router-link to="/user_exchange_vip">
+                      <GiftOutlined />
+                      兑换会员
+                    </router-link>
+                  </a-menu-item>
                   <a-menu-item @click="doLogout">
                     <LogoutOutlined />
                     退出登录
@@ -52,8 +58,9 @@
 </template>
 <script lang="ts" setup>
 import { computed, h, ref } from 'vue'
-import { HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
-import { MenuProps, message } from 'ant-design-vue'
+import { GiftOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import type { MenuProps } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { userLogoutUsingPost } from '@/api/userController.ts'
@@ -98,8 +105,8 @@ const originItems = [
 // 根据权限过滤菜单项
 const filterMenus = (menus = [] as MenuProps['items']) => {
   return menus?.filter((menu) => {
-    // 管理员才能看到 /admin 开头的菜单
-    if (menu?.key?.startsWith('/admin')) {
+    const key = menu?.key
+    if (typeof key === 'string' && key.startsWith('/admin')) {
       const loginUser = loginUserStore.loginUser
       if (!loginUser || loginUser.userRole !== 'admin') {
         return false
@@ -121,7 +128,7 @@ router.afterEach((to, from, next) => {
 })
 
 // 路由跳转事件
-const doMenuClick = ({ key }) => {
+const doMenuClick = ({ key }: { key: string }) => {
   router.push({
     path: key,
   })
@@ -143,18 +150,76 @@ const doLogout = async () => {
 </script>
 
 <style scoped>
+#globalHeader {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+#globalHeader :deep(.ant-menu-horizontal) {
+  border-bottom: none;
+  background: transparent;
+  line-height: 48px;
+}
+
+#globalHeader :deep(.ant-menu-item) {
+  border-radius: 10px !important;
+  margin-inline: 4px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+#globalHeader :deep(.ant-menu-item:hover) {
+  background: rgba(99, 102, 241, 0.08) !important;
+  color: var(--yx-primary, #6366f1);
+}
+
+#globalHeader :deep(.ant-menu-item-selected) {
+  background: rgba(99, 102, 241, 0.12) !important;
+}
+
 #globalHeader .title-bar {
   display: flex;
   align-items: center;
+  padding: 4px 0;
+  border-radius: 12px;
+  transition: opacity 0.2s ease;
+}
+
+#globalHeader .title-bar:hover {
+  opacity: 0.88;
 }
 
 .title {
-  color: black;
-  font-size: 18px;
-  margin-left: 16px;
+  color: var(--yx-text-title, #0f172a);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-left: 12px;
 }
 
 .logo {
-  height: 48px;
+  height: 44px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.15);
+}
+
+.user-login-status {
+  text-align: right;
+}
+
+.user-login-status :deep(.ant-space) {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.user-login-status :deep(.ant-space:hover) {
+  background: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.1);
 }
 </style>

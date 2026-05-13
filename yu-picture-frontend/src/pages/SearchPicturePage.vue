@@ -1,7 +1,7 @@
 <template>
-  <div id="searchPicturePage">
-    <h2 style="margin-bottom: 16px">以图搜图</h2>
-    <h3 style="margin-bottom: 16px">原图</h3>
+  <div id="searchPicturePage" class="yx-page-shell">
+    <h2 class="yx-page-title">以图搜图</h2>
+    <h3 class="section-title">原图</h3>
     <a-card hoverable style="width: 240px">
       <template #cover>
         <img
@@ -11,7 +11,7 @@
         />
       </template>
     </a-card>
-    <h3 style="margin: 16px 0">识图结果</h3>
+    <h3 class="section-title results-title">识图结果</h3>
     <!-- 图片结果列表 -->
     <a-list
       :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
@@ -104,5 +104,32 @@ onMounted(() => {
 <style scoped>
 #searchPicturePage {
   margin-bottom: 16px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--yx-text-title, #0f172a);
+  letter-spacing: 0.02em;
+  margin: 0 0 12px;
+}
+
+.results-title {
+  margin-top: 1.5rem;
+}
+
+#searchPicturePage :deep(.ant-card) {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+#searchPicturePage :deep(.ant-card:hover) {
+  box-shadow: 0 12px 32px rgba(99, 102, 241, 0.12);
+  transform: translateY(-2px);
 }
 </style>

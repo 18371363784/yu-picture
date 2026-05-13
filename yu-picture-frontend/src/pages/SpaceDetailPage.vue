@@ -1,5 +1,5 @@
 <template>
-  <div id="spaceDetailPage">
+  <div id="spaceDetailPage" class="yx-page-shell">
     <!-- 空间信息 -->
     <a-flex justify="space-between">
       <h2>{{ space.spaceName }}（{{ SPACE_TYPE_MAP[space.spaceType] }}）</h2>

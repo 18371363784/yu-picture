@@ -1,59 +1,76 @@
 <template>
   <div id="basicLayout">
-    <a-layout style="min-height: 100vh">
+    <a-layout class="yx-layout-root">
       <a-layout-header class="header">
         <GlobalHeader />
       </a-layout-header>
-      <a-layout>
+      <a-layout class="yx-layout-body">
         <GlobalSider class="sider" />
         <a-layout-content class="content">
-          <router-view />
+          <div class="content-inner">
+            <router-view />
+          </div>
         </a-layout-content>
       </a-layout>
-      <!-- <a-layout-footer class="footer">
-        <a href="https://www.codefather.cn" target="_blank"> 编程导航 by 程序员鱼皮 </a>
-      </a-layout-footer> -->
     </a-layout>
   </div>
 </template>
 
 <script setup lang="ts">
 import GlobalHeader from '@/components/GlobalHeader.vue'
-import GlobalSider from "@/components/GlobalSider.vue";
+import GlobalSider from '@/components/GlobalSider.vue'
 </script>
 
 <style scoped>
+.yx-layout-root {
+  min-height: 100vh;
+  background: transparent;
+}
+
 #basicLayout .header {
   padding-inline: 20px;
-  background: white;
-  color: unset;
-  margin-bottom: 1px;
+  margin-bottom: 0;
+  height: auto;
+  line-height: unset;
+  padding-block: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.06);
+}
+
+#basicLayout .yx-layout-body {
+  background: transparent;
 }
 
 #basicLayout .sider {
-  background: #fff;
-  border-right: 0.5px solid #eee;
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(148, 163, 184, 0.18) !important;
   padding-top: 20px;
+}
+
+#basicLayout :deep(.ant-layout-sider-children) {
+  background: transparent;
 }
 
 #basicLayout :deep(.ant-menu-root) {
   border-bottom: none !important;
   border-inline-end: none !important;
+  background: transparent !important;
 }
 
 #basicLayout .content {
-  padding: 28px;
-  background: linear-gradient(to right, #fefefe, #fff);
-  margin-bottom: 28px;
+  padding: 24px 28px 40px;
+  background: transparent;
+  margin-bottom: 0;
 }
 
-#basicLayout .footer {
-  background: #efefef;
-  padding: 16px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
+.content-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
 }
 </style>

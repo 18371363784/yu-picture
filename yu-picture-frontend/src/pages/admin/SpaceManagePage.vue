@@ -1,5 +1,5 @@
 <template>
-  <div id="spaceManagePage">
+  <div id="spaceManagePage" class="yx-page-shell yx-table-wrap">
     <a-flex justify="space-between">
       <h2>空间管理</h2>
       <a-space>

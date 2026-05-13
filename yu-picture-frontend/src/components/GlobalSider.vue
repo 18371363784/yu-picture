@@ -17,7 +17,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, h, ref, watchEffect } from 'vue'
-import { PictureOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { GiftOutlined, PictureOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { SPACE_TYPE_ENUM } from '@/constants/space.ts'
@@ -37,6 +37,11 @@ const fixedMenuItems = [
     key: '/my_space',
     label: '我的空间',
     icon: () => h(UserOutlined),
+  },
+  {
+    key: '/user_exchange_vip',
+    label: '兑换会员',
+    icon: () => h(GiftOutlined),
   },
   {
     key: '/add_space?type=' + SPACE_TYPE_ENUM.TEAM,
@@ -98,7 +103,7 @@ router.afterEach((to, from, next) => {
 })
 
 // 路由跳转事件
-const doMenuClick = ({ key }) => {
+const doMenuClick = ({ key }: { key: string }) => {
   router.push(key)
 }
 </script>
@@ -106,5 +111,39 @@ const doMenuClick = ({ key }) => {
 <style scoped>
 #globalSider .ant-layout-sider {
   background: none;
+}
+
+#globalSider :deep(.ant-menu-inline) {
+  background: transparent !important;
+  border-inline-end: none !important;
+}
+
+#globalSider :deep(.ant-menu-item) {
+  border-radius: 10px !important;
+  margin-block: 4px;
+  width: calc(100% - 8px);
+  margin-inline: 4px;
+  transition:
+    background 0.22s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#globalSider :deep(.ant-menu-item:hover) {
+  background: rgba(99, 102, 241, 0.1) !important;
+  transform: translateX(2px);
+}
+
+#globalSider :deep(.ant-menu-item-selected) {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.18), rgba(14, 165, 233, 0.1)) !important;
+  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.12);
+}
+
+#globalSider :deep(.ant-menu-item-group-title) {
+  padding-inline: 16px !important;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--yx-text-muted, #94a3b8);
+  text-transform: uppercase;
 }
 </style>

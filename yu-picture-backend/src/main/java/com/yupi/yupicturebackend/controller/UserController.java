@@ -12,6 +12,7 @@ import com.yupi.yupicturebackend.constant.UserConstant;
 import com.yupi.yupicturebackend.exception.BusinessException;
 import com.yupi.yupicturebackend.exception.ErrorCode;
 import com.yupi.yupicturebackend.exception.ThrowUtils;
+import com.yupi.yupicturebackend.manager.auth.StpKit;
 import com.yupi.yupicturebackend.model.dto.user.*;
 import com.yupi.yupicturebackend.model.entity.User;
 import com.yupi.yupicturebackend.model.vo.LoginUserVO;
@@ -176,6 +177,13 @@ public class UserController {
         User loginUser = userService.getLoginUser(httpServletRequest);
         // 调用 service 层的方法进行会员兑换
         boolean result = userService.exchangeVip(loginUser, vipCode);
+        if (result) {
+            User refreshed = userService.getById(loginUser.getId());
+            httpServletRequest.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, refreshed);
+            if (StpKit.SPACE.isLogin()) {
+                StpKit.SPACE.getSession().set(UserConstant.USER_LOGIN_STATE, refreshed);
+            }
+        }
         return ResultUtils.success(result);
     }
 

@@ -1,5 +1,7 @@
 <template>
-  <div id="homePage">
+  <div id="homePage" class="yx-page-shell">
+    <h1 class="yx-page-title">公共图库</h1>
+    <p class="yx-page-sub">发现与筛选智能协同云图库中的图片</p>
     <!-- 搜索框 -->
     <div class="search-bar">
       <a-input-search
@@ -32,7 +34,7 @@
     <PictureList :dataList="dataList" :loading="loading" />
     <!-- 分页 -->
     <a-pagination
-      style="text-align: right"
+      class="yx-pagination-bar"
       v-model:current="searchParams.current"
       v-model:pageSize="searchParams.pageSize"
       :total="total"
@@ -139,12 +141,51 @@ onMounted(() => {
   margin-bottom: 16px;
 }
 
+#homePage .yx-page-title {
+  text-align: center;
+}
+
+#homePage .yx-page-sub {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
 #homePage .search-bar {
-  max-width: 480px;
-  margin: 0 auto 16px;
+  max-width: 520px;
+  margin: 0 auto 1.25rem;
+}
+
+#homePage .search-bar :deep(.ant-input-search) {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+}
+
+#homePage :deep(.ant-tabs-nav) {
+  margin-bottom: 12px;
+}
+
+#homePage :deep(.ant-tabs-tab) {
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 #homePage .tag-bar {
-  margin-bottom: 16px;
+  margin-bottom: 1.25rem;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+#homePage .tag-bar > span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--yx-text-muted, #94a3b8);
+  letter-spacing: 0.04em;
+}
+
+#homePage .yx-pagination-bar {
+  text-align: right;
 }
 </style>

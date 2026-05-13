@@ -1,6 +1,6 @@
 <template>
-  <div id="addPicturePage">
-    <h2 style="margin-bottom: 16px">
+  <div id="addPicturePage" class="yx-page-shell">
+    <h2 class="yx-page-title">
       {{ route.query?.id ? '修改图片' : '创建图片' }}
     </h2>
     <a-typography-paragraph v-if="spaceId" type="secondary">
@@ -251,6 +251,18 @@ watchEffect(() => {
 #addPicturePage {
   max-width: 720px;
   margin: 0 auto;
+}
+
+#addPicturePage .yx-page-title {
+  margin-bottom: 0.75rem;
+}
+
+#addPicturePage :deep(.ant-tabs-nav) {
+  margin-bottom: 1rem;
+}
+
+#addPicturePage :deep(.ant-tabs-tab) {
+  font-weight: 500;
 }
 
 #addPicturePage .edit-bar {
