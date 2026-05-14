@@ -6,8 +6,6 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.ciModel.persistence.ImageInfo;
-import com.qcloud.cos.model.ciModel.persistence.OriginalInfo;
-import com.yupi.yupicturebackend.common.ResultUtils;
 import com.yupi.yupicturebackend.config.CosClientConfig;
 import com.yupi.yupicturebackend.exception.BusinessException;
 import com.yupi.yupicturebackend.exception.ErrorCode;
@@ -18,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -61,22 +62,40 @@ public class FileManager {
             file = File.createTempFile(uploadPath, null);
             multipartFile.transferTo(file);
             PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
-            // 获取图片信息对象
-            ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
-            // 计算宽高
-            int picWidth = imageInfo.getWidth();
-            int picHeight = imageInfo.getHeight();
-            double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
-            // 封装返回结果
             UploadPictureResult uploadPictureResult = new UploadPictureResult();
-            uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + uploadPath);
             uploadPictureResult.setPicName(FileUtil.mainName(originalFilename));
             uploadPictureResult.setPicSize(FileUtil.size(file));
-            uploadPictureResult.setPicWidth(picWidth);
-            uploadPictureResult.setPicHeight(picHeight);
-            uploadPictureResult.setPicScale(picScale);
-            uploadPictureResult.setPicFormat(imageInfo.getFormat());
-            // 返回可访问的地址
+            String publicUrl = cosClientConfig.buildPublicObjectUrl(uploadPath);
+            uploadPictureResult.setUrl(publicUrl);
+            uploadPictureResult.setThumbnailUrl(publicUrl);
+            if (putObjectResult.getCiUploadResult() != null
+                    && putObjectResult.getCiUploadResult().getOriginalInfo() != null
+                    && putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo() != null) {
+                ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
+                int picWidth = imageInfo.getWidth();
+                int picHeight = imageInfo.getHeight();
+                double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
+                uploadPictureResult.setPicWidth(picWidth);
+                uploadPictureResult.setPicHeight(picHeight);
+                uploadPictureResult.setPicScale(picScale);
+                uploadPictureResult.setPicFormat(imageInfo.getFormat());
+            } else {
+                BufferedImage image;
+                try {
+                    image = ImageIO.read(file);
+                } catch (IOException e) {
+                    throw new BusinessException(ErrorCode.SYSTEM_ERROR, "读取图片失败");
+                }
+                ThrowUtils.throwIf(image == null, ErrorCode.PARAMS_ERROR, "无法解析图片");
+                int picWidth = image.getWidth();
+                int picHeight = image.getHeight();
+                double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
+                uploadPictureResult.setPicWidth(picWidth);
+                uploadPictureResult.setPicHeight(picHeight);
+                uploadPictureResult.setPicScale(picScale);
+                String suffix = FileUtil.getSuffix(originalFilename);
+                uploadPictureResult.setPicFormat(suffix != null && !suffix.isEmpty() ? suffix : "jpeg");
+            }
             return uploadPictureResult;
         } catch (Exception e) {
             log.error("图片上传到对象存储失败", e);

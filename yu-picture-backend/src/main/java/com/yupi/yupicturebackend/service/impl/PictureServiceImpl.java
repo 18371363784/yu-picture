@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yupi.yupicturebackend.api.aliyunai.AliYunAiApi;
+import com.yupi.yupicturebackend.config.CosClientConfig;
 import com.yupi.yupicturebackend.api.aliyunai.model.CreateOutPaintingTaskRequest;
 import com.yupi.yupicturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.yupi.yupicturebackend.exception.BusinessException;
@@ -82,10 +83,21 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     private CosManager cosManager;
 
     @Resource
+    private CosClientConfig cosClientConfig;
+
+    @Resource
     private TransactionTemplate transactionTemplate;
 
     @Resource
     private AliYunAiApi aliYunAiApi;
+
+    private void fixPictureVoUrls(PictureVO pictureVO) {
+        if (pictureVO == null) {
+            return;
+        }
+        pictureVO.setUrl(cosClientConfig.normalizePictureAccessUrl(pictureVO.getUrl()));
+        pictureVO.setThumbnailUrl(cosClientConfig.normalizePictureAccessUrl(pictureVO.getThumbnailUrl()));
+    }
 
     @Override
     public void validPicture(Picture picture) {
@@ -218,13 +230,16 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         });
         // 可自行实现，如果是更新，可以清理图片资源
         // this.clearPictureFile(oldPicture);
-        return PictureVO.objToVo(picture);
+        PictureVO pictureVO = PictureVO.objToVo(picture);
+        fixPictureVoUrls(pictureVO);
+        return pictureVO;
     }
 
     @Override
     public PictureVO getPictureVO(Picture picture, HttpServletRequest request) {
         // 对象转封装类
         PictureVO pictureVO = PictureVO.objToVo(picture);
+        fixPictureVoUrls(pictureVO);
         // 关联查询用户信息
         Long userId = picture.getUserId();
         if (userId != null && userId > 0) {
@@ -248,6 +263,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 对象列表 => 封装对象列表
         List<PictureVO> pictureVOList = pictureList.stream()
                 .map(PictureVO::objToVo)
+                .peek(this::fixPictureVoUrls)
                 .collect(Collectors.toList());
         // 1. 关联查询用户信息
         // 1,2,3,4
@@ -478,13 +494,16 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             // 操作数据库
             boolean result = this.removeById(pictureId);
             ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-            // 更新空间的使用额度，释放额度
-            boolean update = spaceService.lambdaUpdate()
-                    .eq(Space::getId, oldPicture.getSpaceId())
-                    .setSql("totalSize = totalSize - " + oldPicture.getPicSize())
-                    .setSql("totalCount = totalCount - 1")
-                    .update();
-            ThrowUtils.throwIf(!update, ErrorCode.OPERATION_ERROR, "额度更新失败");
+            // 仅私有空间图片需要回退空间额度；公共图库 spaceId 为 null，不能执行 UPDATE space WHERE id = null
+            Long spaceId = oldPicture.getSpaceId();
+            if (spaceId != null) {
+                boolean update = spaceService.lambdaUpdate()
+                        .eq(Space::getId, spaceId)
+                        .setSql("totalSize = totalSize - " + oldPicture.getPicSize())
+                        .setSql("totalCount = totalCount - 1")
+                        .update();
+                ThrowUtils.throwIf(!update, ErrorCode.OPERATION_ERROR, "额度更新失败");
+            }
             return true;
         });
         // 异步清理文件
@@ -572,6 +591,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 5. 返回结果
         return sortedPictureList.stream()
                 .map(PictureVO::objToVo)
+                .peek(this::fixPictureVoUrls)
                 .collect(Collectors.toList());
     }
 

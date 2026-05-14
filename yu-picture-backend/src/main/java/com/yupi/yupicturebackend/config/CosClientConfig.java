@@ -11,15 +11,154 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.net.URI;
+
 @Configuration
 @ConfigurationProperties(prefix = "cos.client")
 @Data
 public class CosClientConfig {
 
     /**
-     * 域名
+     * 访问域名（可写完整 URL，如 https://xxx.cos.ap-xxx.myqcloud.com；若只写域名或 IP，保存外链时会自动补上 https://）
      */
     private String host;
+
+    /**
+     * 生成浏览器可直接访问的对象 URL，避免裸域名被当成站内相对路径导致图片无法显示。
+     * <p>若 {@link #host} 为裸 IP（或为空），通常并非 COS 访问域名，此时改用腾讯云标准桶域名。</p>
+     */
+    public String buildPublicObjectUrl(String objectKey) {
+        if (objectKey == null || objectKey.isEmpty()) {
+            return resolvePublicBaseUrl();
+        }
+        String base = resolvePublicBaseUrl();
+        if (base.isEmpty()) {
+            return objectKey;
+        }
+        String key = objectKey.trim();
+        while (key.startsWith("/")) {
+            key = key.substring(1);
+        }
+        if (key.isEmpty()) {
+            return base;
+        }
+        return base + "/" + key;
+    }
+
+    private String resolvePublicBaseUrl() {
+        if (shouldPreferTencentBucketDomain()) {
+            return "https://" + bucket.trim() + ".cos." + region.trim() + ".myqcloud.com";
+        }
+        return normalizeHostBase();
+    }
+
+    /**
+     * host 配成裸 IP / localhost 时，按 IP 访问一般拿不到 COS 对象，改用标准桶域名。
+     */
+    private boolean shouldPreferTencentBucketDomain() {
+        if (bucket == null || bucket.isEmpty() || region == null || region.isEmpty()) {
+            return false;
+        }
+        if (host == null || host.trim().isEmpty()) {
+            return true;
+        }
+        return isBareIpOrLocalhost(host);
+    }
+
+    private static boolean isBareIpOrLocalhost(String rawHost) {
+        String h = extractHostname(rawHost);
+        if (h.isEmpty()) {
+            return false;
+        }
+        if ("localhost".equalsIgnoreCase(h)) {
+            return true;
+        }
+        return h.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+    }
+
+    private static String extractHostname(String rawHost) {
+        String h = rawHost.trim();
+        if (h.startsWith("http://")) {
+            h = h.substring(7);
+        } else if (h.startsWith("https://")) {
+            h = h.substring(8);
+        }
+        int slash = h.indexOf('/');
+        if (slash >= 0) {
+            h = h.substring(0, slash);
+        }
+        int colon = h.indexOf(':');
+        if (colon >= 0) {
+            h = h.substring(0, colon);
+        }
+        return h;
+    }
+
+    private String normalizeHostBase() {
+        if (host == null) {
+            return "";
+        }
+        String base = host.trim();
+        if (base.isEmpty()) {
+            return "";
+        }
+        if (!base.startsWith("http://") && !base.startsWith("https://")) {
+            base = "https://" + base;
+        }
+        while (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 1);
+        }
+        return base;
+    }
+
+    /**
+     * 修正库中已保存的图片外链（误用 API 的 IP、双斜杠等），供接口返回与前端展示。
+     */
+    public String normalizePictureAccessUrl(String storedUrl) {
+        if (storedUrl == null || storedUrl.isEmpty()) {
+            return storedUrl;
+        }
+        String u = collapseDuplicateSlashAfterAuthority(storedUrl.trim());
+        if (!shouldPreferTencentBucketDomain()) {
+            return ensureHttpScheme(u);
+        }
+        String cfgHost = extractHostname(host != null ? host : "");
+        if (cfgHost.isEmpty()) {
+            return ensureHttpScheme(u);
+        }
+        try {
+            String withScheme = ensureHttpScheme(u);
+            withScheme = collapseDuplicateSlashAfterAuthority(withScheme);
+            URI uri = URI.create(withScheme);
+            String h = uri.getHost();
+            if (h != null && h.equalsIgnoreCase(cfgHost)) {
+                String path = uri.getRawPath();
+                if (path == null || path.isEmpty() || "/".equals(path)) {
+                    return resolvePublicBaseUrl();
+                }
+                return buildPublicObjectUrl(path);
+            }
+        } catch (IllegalArgumentException ignored) {
+            // 非标准 URL 时退回仅补全协议
+        }
+        return ensureHttpScheme(u);
+    }
+
+    private static String ensureHttpScheme(String u) {
+        if (u.startsWith("http://") || u.startsWith("https://")) {
+            return u;
+        }
+        String rest = u.replaceFirst("^/+", "");
+        rest = rest.replaceAll("^([^/]+)/{2,}", "$1/");
+        return "https://" + rest;
+    }
+
+    private static String collapseDuplicateSlashAfterAuthority(String u) {
+        if (u == null) {
+            return null;
+        }
+        return u.replaceAll("(https?://[^/?#]+)/{2,}", "$1/");
+    }
 
     /**
      * secretId

@@ -17,7 +17,10 @@ import com.yupi.yupicturebackend.model.dto.file.UploadPictureResult;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -56,12 +59,19 @@ public abstract class PictureUploadTemplate {
             file = File.createTempFile(uploadPath, null);
             // 处理文件来源
             processFile(inputSource, file);
-            // 4. 上传图片到对象存储
+            // 4. 上传图片到对象存储（若未开通数据万象服务角色，CosManager 会回退为原图直传）
             PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
             // 5. 获取图片信息对象，封装返回结果
+            if (putObjectResult.getCiUploadResult() == null
+                    || putObjectResult.getCiUploadResult().getOriginalInfo() == null
+                    || putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo() == null) {
+                return buildResultFromLocalFile(originalFilename, file, uploadPath);
+            }
             ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
-            // 获取到图片处理结果
             ProcessResults processResults = putObjectResult.getCiUploadResult().getProcessResults();
+            if (processResults == null) {
+                return buildResult(originalFilename, file, uploadPath, imageInfo);
+            }
             List<CIObject> objectList = processResults.getObjectList();
             if (CollUtil.isNotEmpty(objectList)) {
                 // 获取压缩之后得到的文件信息
@@ -119,7 +129,7 @@ public abstract class PictureUploadTemplate {
         // 封装返回结果
         UploadPictureResult uploadPictureResult = new UploadPictureResult();
         // 设置压缩后的原图地址
-        uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + compressedCiObject.getKey());
+        uploadPictureResult.setUrl(cosClientConfig.buildPublicObjectUrl(compressedCiObject.getKey()));
         uploadPictureResult.setPicName(FileUtil.mainName(originalFilename));
         uploadPictureResult.setPicSize(compressedCiObject.getSize().longValue());
         uploadPictureResult.setPicWidth(picWidth);
@@ -128,7 +138,7 @@ public abstract class PictureUploadTemplate {
         uploadPictureResult.setPicFormat(compressedCiObject.getFormat());
         uploadPictureResult.setPicColor(imageInfo.getAve());
         // 设置缩略图地址
-        uploadPictureResult.setThumbnailUrl(cosClientConfig.getHost() + "/" + thumbnailCiObject.getKey());
+        uploadPictureResult.setThumbnailUrl(cosClientConfig.buildPublicObjectUrl(thumbnailCiObject.getKey()));
         // 返回可访问的地址
         return uploadPictureResult;
     }
@@ -149,7 +159,9 @@ public abstract class PictureUploadTemplate {
         double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
         // 封装返回结果
         UploadPictureResult uploadPictureResult = new UploadPictureResult();
-        uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + uploadPath);
+        String publicUrl = cosClientConfig.buildPublicObjectUrl(uploadPath);
+        uploadPictureResult.setUrl(publicUrl);
+        uploadPictureResult.setThumbnailUrl(publicUrl);
         uploadPictureResult.setPicName(FileUtil.mainName(originalFilename));
         uploadPictureResult.setPicSize(FileUtil.size(file));
         uploadPictureResult.setPicWidth(picWidth);
@@ -158,6 +170,40 @@ public abstract class PictureUploadTemplate {
         uploadPictureResult.setPicFormat(imageInfo.getFormat());
         uploadPictureResult.setPicColor(imageInfo.getAve());
         // 返回可访问的地址
+        return uploadPictureResult;
+    }
+
+    /**
+     * 无数据万象回执时，从本机临时文件解析宽高等信息（原图直传）
+     */
+    private UploadPictureResult buildResultFromLocalFile(String originalFilename, File file, String uploadPath) {
+        BufferedImage image;
+        try {
+            image = ImageIO.read(file);
+        } catch (IOException e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "读取图片失败");
+        }
+        if (image == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "无法解析图片，请确认格式是否受支持");
+        }
+        int picWidth = image.getWidth();
+        int picHeight = image.getHeight();
+        double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
+        String suffix = FileUtil.getSuffix(originalFilename);
+        if (suffix == null || suffix.isEmpty()) {
+            suffix = "jpeg";
+        }
+        UploadPictureResult uploadPictureResult = new UploadPictureResult();
+        String publicUrl = cosClientConfig.buildPublicObjectUrl(uploadPath);
+        uploadPictureResult.setUrl(publicUrl);
+        uploadPictureResult.setThumbnailUrl(publicUrl);
+        uploadPictureResult.setPicName(FileUtil.mainName(originalFilename));
+        uploadPictureResult.setPicSize(FileUtil.size(file));
+        uploadPictureResult.setPicWidth(picWidth);
+        uploadPictureResult.setPicHeight(picHeight);
+        uploadPictureResult.setPicScale(picScale);
+        uploadPictureResult.setPicFormat(suffix);
+        uploadPictureResult.setPicColor(null);
         return uploadPictureResult;
     }
 
