@@ -20,6 +20,7 @@ import com.yupi.yupicturebackend.model.vo.UserVO;
 import com.yupi.yupicturebackend.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -185,6 +186,37 @@ public class UserController {
             }
         }
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 获取个人信息
+     */
+    @GetMapping("/get/my/profile")
+    public BaseResponse<UserVO> getMyProfile(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(userService.getMyProfile(loginUser));
+    }
+
+    /**
+     * 更新个人信息
+     */
+    @PostMapping("/update/my/profile")
+    public BaseResponse<Boolean> updateMyProfile(@RequestBody UpdateMyProfileRequest updateRequest,
+                                                  HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        userService.updateMyProfile(updateRequest, loginUser);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 上传头像
+     */
+    @PostMapping("/upload/avatar")
+    public BaseResponse<String> uploadAvatar(@RequestPart("file") MultipartFile file,
+                                              HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        String avatarUrl = userService.uploadAvatar(file, loginUser);
+        return ResultUtils.success(avatarUrl);
     }
 
 }

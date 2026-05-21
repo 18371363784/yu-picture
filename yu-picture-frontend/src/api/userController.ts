@@ -149,3 +149,41 @@ export async function updateUserUsingPost(
     ...(options || {}),
   })
 }
+
+/** getMyProfile GET /api/user/get/my/profile */
+export async function getMyProfileUsingGet(options?: { [key: string]: any }) {
+  return request<API.BaseResponseUserVO_>('/api/user/get/my/profile', {
+    method: 'GET',
+    ...(options || {}),
+  })
+}
+
+/** updateMyProfile POST /api/user/update/my/profile */
+export async function updateMyProfileUsingPost(
+  body: API.UpdateMyProfileRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseBoolean_>('/api/user/update/my/profile', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
+/** uploadAvatar POST /api/user/upload/avatar */
+export async function uploadAvatarUsingPost(
+  file: File,
+  options?: { [key: string]: any }
+) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request<API.BaseResponseString_>('/api/user/upload/avatar', {
+    method: 'POST',
+    data: formData,
+    requestType: 'form',
+    ...(options || {}),
+  })
+}

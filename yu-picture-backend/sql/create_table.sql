@@ -123,6 +123,13 @@ ALTER TABLE user
     ADD COLUMN vipCode varchar(128) NULL COMMENT '会员兑换码',
     ADD COLUMN vipNumber bigint NULL COMMENT '会员编号';
 
+-- 扩展用户表：新增个人信息字段
+ALTER TABLE user
+    ADD COLUMN gender INT DEFAULT 0 COMMENT '性别：0-未知 1-男 2-女',
+    ADD COLUMN phone VARCHAR(32) NULL COMMENT '手机号',
+    ADD COLUMN email VARCHAR(128) NULL COMMENT '邮箱',
+    ADD COLUMN birthday DATETIME NULL COMMENT '生日';
+
 -- 图片添加到空间的审批表
 create table if not exists picture_approval
 (

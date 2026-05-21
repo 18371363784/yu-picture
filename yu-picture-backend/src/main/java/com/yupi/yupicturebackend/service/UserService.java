@@ -1,11 +1,13 @@
 package com.yupi.yupicturebackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yupi.yupicturebackend.model.dto.user.UpdateMyProfileRequest;
 import com.yupi.yupicturebackend.model.dto.user.UserQueryRequest;
 import com.yupi.yupicturebackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yupi.yupicturebackend.model.vo.LoginUserVO;
 import com.yupi.yupicturebackend.model.vo.UserVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -104,4 +106,19 @@ public interface UserService extends IService<User> {
      * 用户兑换会员（会员码兑换）
      */
     boolean exchangeVip(User user, String vipCode);
+
+    /**
+     * 获取用户详细信息（个人信息页用）
+     */
+    UserVO getMyProfile(User loginUser);
+
+    /**
+     * 更新个人信息
+     */
+    void updateMyProfile(UpdateMyProfileRequest updateRequest, User loginUser);
+
+    /**
+     * 上传头像
+     */
+    String uploadAvatar(MultipartFile file, User loginUser);
 }

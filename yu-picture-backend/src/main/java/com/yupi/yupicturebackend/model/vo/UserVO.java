@@ -57,6 +57,26 @@ public class UserVO implements Serializable {
     private Long vipNumber;
 
     /**
+     * 性别：0-未知 1-男 2-女
+     */
+    private Integer gender;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 生日
+     */
+    private Date birthday;
+
+    /**
      * 创建时间
      */
     private Date createTime;

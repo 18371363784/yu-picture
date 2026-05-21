@@ -17,6 +17,7 @@ import SpaceUserManagePage from '@/pages/admin/SpaceUserManagePage.vue'
 import UserExchangeVipPage from '@/pages/UserExchangeVipPage.vue'
 import MyApprovalsPage from '@/pages/MyApprovalsPage.vue'
 import ApprovalManagePage from '@/pages/admin/ApprovalManagePage.vue'
+import UserProfilePage from '@/pages/UserProfilePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -113,6 +114,11 @@ const router = createRouter({
       path: '/admin/approvalManage',
       name: '审批管理',
       component: ApprovalManagePage,
+    },
+    {
+      path: '/user/profile',
+      name: '个人主页',
+      component: UserProfilePage,
     },
     {
       path: '/about',

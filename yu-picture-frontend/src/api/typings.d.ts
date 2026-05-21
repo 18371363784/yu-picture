@@ -301,6 +301,10 @@ declare namespace API {
     userName?: string
     userProfile?: string
     userRole?: string
+    gender?: number
+    phone?: string
+    email?: string
+    birthday?: string
     vipCode?: string
     vipExpireTime?: string
     vipNumber?: number
@@ -715,9 +719,22 @@ declare namespace API {
     userPassword?: string
     userProfile?: string
     userRole?: string
+    gender?: number
+    phone?: string
+    email?: string
+    birthday?: string
     vipCode?: string
     vipExpireTime?: string
     vipNumber?: number
+  }
+
+  type UpdateMyProfileRequest = {
+    userName?: string
+    userProfile?: string
+    gender?: number
+    phone?: string
+    email?: string
+    birthday?: string
   }
 
   type UserAddRequest = {
@@ -767,6 +784,10 @@ declare namespace API {
     userName?: string
     userProfile?: string
     userRole?: string
+    gender?: number
+    phone?: string
+    email?: string
+    birthday?: string
     vipCode?: string
     vipExpireTime?: string
     vipNumber?: number

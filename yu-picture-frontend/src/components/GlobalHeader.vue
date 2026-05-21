@@ -35,6 +35,12 @@
                     </router-link>
                   </a-menu-item>
                   <a-menu-item>
+                    <router-link to="/user/profile">
+                      <IdcardOutlined />
+                      个人主页
+                    </router-link>
+                  </a-menu-item>
+                  <a-menu-item>
                     <router-link to="/my_approvals">
                       <FileTextOutlined />
                       我的审批
@@ -64,7 +70,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, h, ref } from 'vue'
-import { FileTextOutlined, GiftOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { FileTextOutlined, GiftOutlined, HomeOutlined, IdcardOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'

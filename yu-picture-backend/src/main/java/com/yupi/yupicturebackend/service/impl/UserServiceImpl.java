@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONArray;
@@ -14,7 +15,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yupi.yupicturebackend.constant.UserConstant;
 import com.yupi.yupicturebackend.exception.BusinessException;
 import com.yupi.yupicturebackend.exception.ErrorCode;
+import com.yupi.yupicturebackend.exception.ThrowUtils;
+import com.yupi.yupicturebackend.manager.CosManager;
 import com.yupi.yupicturebackend.manager.auth.StpKit;
+import com.yupi.yupicturebackend.model.dto.user.UpdateMyProfileRequest;
 import com.yupi.yupicturebackend.model.dto.user.UserQueryRequest;
 import com.yupi.yupicturebackend.model.dto.user.VipCode;
 import com.yupi.yupicturebackend.model.entity.User;
@@ -30,8 +34,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -49,6 +55,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
+
+    @javax.annotation.Resource
+    private CosManager cosManager;
 
     /**
      * 用户注册
@@ -349,6 +358,52 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     // endregion ------- 以下代码为用户兑换会员功能 --------
+
+    @Override
+    public UserVO getMyProfile(User loginUser) {
+        User user = this.getById(loginUser.getId());
+        return this.getUserVO(user);
+    }
+
+    @Override
+    public void updateMyProfile(UpdateMyProfileRequest updateRequest, User loginUser) {
+        User user = new User();
+        user.setId(loginUser.getId());
+        user.setUserName(updateRequest.getUserName());
+        user.setUserProfile(updateRequest.getUserProfile());
+        user.setGender(updateRequest.getGender());
+        user.setPhone(updateRequest.getPhone());
+        user.setEmail(updateRequest.getEmail());
+        user.setBirthday(updateRequest.getBirthday());
+        boolean result = this.updateById(user);
+        if (!result) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新个人信息失败");
+        }
+    }
+
+    @Override
+    public String uploadAvatar(MultipartFile file, User loginUser) {
+        ThrowUtils.throwIf(file == null || file.isEmpty(), ErrorCode.PARAMS_ERROR, "文件不能为空");
+        String originalFilename = file.getOriginalFilename();
+        String suffix = FileUtil.getSuffix(originalFilename);
+        ThrowUtils.throwIf(!StrUtil.containsAnyIgnoreCase(suffix, "jpg", "jpeg", "png", "webp"),
+                ErrorCode.PARAMS_ERROR, "仅支持 JPG/PNG/WEBP 格式");
+        String fileName = String.format("avatar/%s_%s.%s", loginUser.getId(), RandomUtil.randomString(8), suffix);
+        try {
+            File tempFile = File.createTempFile("avatar", "." + suffix);
+            file.transferTo(tempFile);
+            cosManager.putObject(fileName, tempFile);
+            tempFile.delete();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "头像上传失败");
+        }
+        String avatarUrl = "https://mww-1429405134.cos.ap-nanjing.myqcloud.com/" + fileName;
+        User user = new User();
+        user.setId(loginUser.getId());
+        user.setUserAvatar(avatarUrl);
+        this.updateById(user);
+        return avatarUrl;
+    }
 }
 
 
