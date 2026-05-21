@@ -15,6 +15,8 @@ import SearchPicturePage from '@/pages/SearchPicturePage.vue'
 import SpaceAnalyzePage from '@/pages/SpaceAnalyzePage.vue'
 import SpaceUserManagePage from '@/pages/admin/SpaceUserManagePage.vue'
 import UserExchangeVipPage from '@/pages/UserExchangeVipPage.vue'
+import MyApprovalsPage from '@/pages/MyApprovalsPage.vue'
+import ApprovalManagePage from '@/pages/admin/ApprovalManagePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -101,6 +103,16 @@ const router = createRouter({
       path: '/user_exchange_vip',
       name: '用户兑换会员',
       component: UserExchangeVipPage,
+    },
+    {
+      path: '/my_approvals',
+      name: '我的审批',
+      component: MyApprovalsPage,
+    },
+    {
+      path: '/admin/approvalManage',
+      name: '审批管理',
+      component: ApprovalManagePage,
     },
     {
       path: '/about',

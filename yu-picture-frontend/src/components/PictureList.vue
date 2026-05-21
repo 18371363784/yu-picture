@@ -74,6 +74,7 @@
               </template>
             </a-card-meta>
             <template v-if="showOp" #actions>
+              <PlusSquareOutlined @click="(e) => doAddToSpace(picture, e)" />
               <ShareAltOutlined @click="(e) => doShare(picture, e)" />
               <SearchOutlined @click="(e) => doSearch(picture, e)" />
               <EditOutlined v-if="canEdit" @click="(e) => doEdit(picture, e)" />
@@ -84,6 +85,12 @@
       </template>
     </a-list>
     <ShareModal ref="shareModalRef" :link="shareLink || ''" />
+    <SelectSpaceModal
+      v-model:visible="selectSpaceModalVisible"
+      :picture-id="currentPictureId"
+      :picture-url="currentPictureUrl"
+      :picture-name="currentPictureName"
+    />
   </div>
 </template>
 
@@ -93,12 +100,14 @@ import { useRouter } from 'vue-router'
 import {
   DeleteOutlined,
   EditOutlined,
+  PlusSquareOutlined,
   SearchOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import ShareModal from '@/components/ShareModal.vue'
+import SelectSpaceModal from '@/components/SelectSpaceModal.vue'
 import { toAbsolutePictureUrl } from '@/utils'
 
 interface Props {
@@ -188,6 +197,19 @@ const doShare = (picture: API.PictureVO, e: MouseEvent) => {
   if (shareModalRef.value) {
     shareModalRef.value.openModal()
   }
+}
+
+const selectSpaceModalVisible = ref(false)
+const currentPictureId = ref(0)
+const currentPictureUrl = ref('')
+const currentPictureName = ref('')
+
+const doAddToSpace = (picture: API.PictureVO, e: MouseEvent) => {
+  e.stopPropagation()
+  currentPictureId.value = picture.id ?? 0
+  currentPictureUrl.value = toAbsolutePictureUrl(picture.thumbnailUrl ?? picture.url) ?? ''
+  currentPictureName.value = picture.name ?? ''
+  selectSpaceModalVisible.value = true
 }
 </script>
 

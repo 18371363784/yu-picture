@@ -5,6 +5,57 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponsePagePictureApprovalVO_ = {
+    code?: number
+    data?: PagePictureApprovalVO_
+    message?: string
+  }
+
+  type PagePictureApprovalVO_ = {
+    current?: number
+    pages?: number
+    records?: PictureApprovalVO[]
+    size?: number
+    total?: number
+  }
+
+  type PictureApprovalVO = {
+    id?: number
+    pictureId?: number
+    pictureUrl?: string
+    pictureName?: string
+    spaceId?: number
+    spaceName?: string
+    userId?: number
+    user?: UserVO
+    reviewStatus?: number
+    reviewMessage?: string
+    reviewerId?: number
+    reviewTime?: string
+    createTime?: string
+  }
+
+  type PictureApprovalAddRequest = {
+    pictureId?: number
+    spaceId?: number
+  }
+
+  type PictureApprovalQueryRequest = {
+    current?: number
+    pageSize?: number
+    reviewStatus?: number
+    sortField?: string
+    sortOrder?: string
+    spaceId?: number
+    userId?: number
+  }
+
+  type PictureApprovalReviewRequest = {
+    id?: number
+    reviewStatus?: number
+    reviewMessage?: string
+  }
+
   type BaseResponseCreateOutPaintingTaskResponse_ = {
     code?: number
     data?: CreateOutPaintingTaskResponse

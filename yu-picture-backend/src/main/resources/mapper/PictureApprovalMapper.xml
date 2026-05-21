@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yupi.yupicturebackend.mapper.PictureApprovalMapper">
+
+    <resultMap id="BaseResultMap" type="com.yupi.yupicturebackend.model.entity.PictureApproval">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="pictureId" column="pictureId" jdbcType="BIGINT"/>
+        <result property="pictureUrl" column="pictureUrl" jdbcType="VARCHAR"/>
+        <result property="pictureName" column="pictureName" jdbcType="VARCHAR"/>
+        <result property="spaceId" column="spaceId" jdbcType="BIGINT"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="reviewStatus" column="reviewStatus" jdbcType="INTEGER"/>
+        <result property="reviewMessage" column="reviewMessage" jdbcType="VARCHAR"/>
+        <result property="reviewerId" column="reviewerId" jdbcType="BIGINT"/>
+        <result property="reviewTime" column="reviewTime" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,pictureId,pictureUrl,pictureName,
+        spaceId,userId,reviewStatus,
+        reviewMessage,reviewerId,reviewTime,
+        createTime,updateTime,isDelete
+    </sql>
+</mapper>

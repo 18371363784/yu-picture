@@ -68,6 +68,9 @@
                 <DownloadOutlined />
               </template>
             </a-button>
+            <a-button :icon="h(PlusSquareOutlined)" type="primary" ghost @click="doAddToSpace">
+              添加到空间
+            </a-button>
             <a-button :icon="h(ShareAltOutlined)" type="primary" ghost @click="doShare">
               分享
             </a-button>
@@ -82,6 +85,12 @@
       </a-col>
     </a-row>
     <ShareModal ref="shareModalRef" :link="shareLink || ''" />
+    <SelectSpaceModal
+      v-model:visible="selectSpaceModalVisible"
+      :picture-id="picture.id ?? 0"
+      :picture-url="pictureDisplayUrl"
+      :picture-name="picture.name"
+    />
   </div>
 </template>
 
@@ -93,11 +102,13 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
+  PlusSquareOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import { downloadImage, formatSize, toAbsolutePictureUrl, toHexColor } from '@/utils'
 import ShareModal from '@/components/ShareModal.vue'
+import SelectSpaceModal from '@/components/SelectSpaceModal.vue'
 import { SPACE_PERMISSION_ENUM } from '@/constants/space.ts'
 
 interface Props {
@@ -182,6 +193,11 @@ const doShare = () => {
   if (shareModalRef.value) {
     shareModalRef.value.openModal()
   }
+}
+
+const selectSpaceModalVisible = ref(false)
+const doAddToSpace = () => {
+  selectSpaceModalVisible.value = true
 }
 </script>
 

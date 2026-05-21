@@ -122,3 +122,25 @@ ALTER TABLE user
     ADD COLUMN vipExpireTime datetime NULL COMMENT '会员过期时间',
     ADD COLUMN vipCode varchar(128) NULL COMMENT '会员兑换码',
     ADD COLUMN vipNumber bigint NULL COMMENT '会员编号';
+
+-- 图片添加到空间的审批表
+create table if not exists picture_approval
+(
+    id            bigint auto_increment comment 'id' primary key,
+    pictureId     bigint                             not null comment '图片 id',
+    pictureUrl    varchar(512)                       null comment '图片 url',
+    pictureName   varchar(128)                       null comment '图片名称',
+    spaceId       bigint                             not null comment '目标空间 id',
+    userId        bigint                             not null comment '申请人用户 id',
+    reviewStatus  int      default 0                 not null comment '审核状态：0-待审核; 1-通过; 2-拒绝',
+    reviewMessage varchar(512)                       null comment '审核信息',
+    reviewerId    bigint                             null comment '审核人 ID',
+    reviewTime    datetime                           null comment '审核时间',
+    createTime    datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime    datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete      tinyint  default 0                 not null comment '是否删除',
+    INDEX idx_pictureId (pictureId),
+    INDEX idx_spaceId (spaceId),
+    INDEX idx_userId (userId),
+    INDEX idx_reviewStatus (reviewStatus)
+) comment '图片审批' collate = utf8mb4_unicode_ci;

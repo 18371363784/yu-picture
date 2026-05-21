@@ -35,6 +35,12 @@
                     </router-link>
                   </a-menu-item>
                   <a-menu-item>
+                    <router-link to="/my_approvals">
+                      <FileTextOutlined />
+                      我的审批
+                    </router-link>
+                  </a-menu-item>
+                  <a-menu-item>
                     <router-link to="/user_exchange_vip">
                       <GiftOutlined />
                       兑换会员
@@ -58,7 +64,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, h, ref } from 'vue'
-import { GiftOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { FileTextOutlined, GiftOutlined, HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
@@ -94,6 +100,11 @@ const originItems = [
     key: '/admin/spaceManage',
     label: '空间管理',
     title: '空间管理',
+  },
+  {
+    key: '/admin/approvalManage',
+    label: '审批管理',
+    title: '审批管理',
   },
   {
     key: 'others',
