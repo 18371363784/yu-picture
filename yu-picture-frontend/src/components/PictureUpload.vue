@@ -6,7 +6,7 @@
       :custom-request="handleUpload"
       :before-upload="beforeUpload"
     >
-      <img v-if="picture?.url" :src="picture?.url" alt="avatar" />
+      <img v-if="displayUrl" :src="displayUrl" alt="图片预览" />
       <div v-else>
         <loading-outlined v-if="loading"></loading-outlined>
         <plus-outlined v-else></plus-outlined>
@@ -16,11 +16,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import type { UploadProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
 import { uploadPictureUsingPost } from '@/api/pictureController.ts'
+import { toAbsolutePictureUrl } from '@/utils'
 
 interface Props {
   picture?: API.PictureVO
@@ -29,6 +30,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const displayUrl = computed(() => toAbsolutePictureUrl(props.picture?.url) ?? '')
 
 /**
  * 上传图片

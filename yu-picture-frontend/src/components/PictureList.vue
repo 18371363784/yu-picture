@@ -54,7 +54,7 @@
                 <img
                   v-show="isImageLoaded(picture, index)"
                   :alt="picture.name"
-                  :src="picture.thumbnailUrl ?? picture.url"
+                  :src="coverSrc(picture)"
                   class="picture-cover-img"
                   loading="lazy"
                   @load="onImageLoad(picture, index)"
@@ -83,7 +83,7 @@
         </a-list-item>
       </template>
     </a-list>
-    <ShareModal ref="shareModalRef" :link="shareLink" />
+    <ShareModal ref="shareModalRef" :link="shareLink || ''" />
   </div>
 </template>
 
@@ -99,6 +99,7 @@ import {
 import { deletePictureUsingPost } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import ShareModal from '@/components/ShareModal.vue'
+import { toAbsolutePictureUrl } from '@/utils'
 
 interface Props {
   dataList?: API.PictureVO[]
@@ -131,6 +132,10 @@ function isImageLoaded(picture: API.PictureVO, index: number) {
 
 function onImageLoad(picture: API.PictureVO, index: number) {
   imageLoaded[imageKey(picture, index)] = true
+}
+
+function coverSrc(picture: API.PictureVO) {
+  return toAbsolutePictureUrl(picture.thumbnailUrl ?? picture.url) ?? ''
 }
 
 const router = useRouter()

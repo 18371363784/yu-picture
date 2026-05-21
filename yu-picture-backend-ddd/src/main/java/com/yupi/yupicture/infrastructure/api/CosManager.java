@@ -2,12 +2,14 @@ package com.yupi.yupicture.infrastructure.api;
 
 import cn.hutool.core.io.FileUtil;
 import com.qcloud.cos.COSClient;
+import com.qcloud.cos.exception.CosServiceException;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.GetObjectRequest;
 import com.qcloud.cos.model.PutObjectRequest;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.ciModel.persistence.PicOperations;
 import com.yupi.yupicture.infrastructure.config.CosClientConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -15,6 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class CosManager {
 
@@ -82,7 +85,23 @@ public class CosManager {
         // 构造处理参数
         picOperations.setRules(rules);
         putObjectRequest.setPicOperations(picOperations);
-        return cosClient.putObject(putObjectRequest);
+        try {
+            return cosClient.putObject(putObjectRequest);
+        } catch (CosServiceException e) {
+            if (isCiServiceRoleMissing(e)) {
+                log.warn("COS 数据万象未授权（{}），改为原图直传", e.getErrorMessage());
+                return putObject(key, file);
+            }
+            throw e;
+        }
+    }
+
+    private static boolean isCiServiceRoleMissing(CosServiceException e) {
+        if (e == null) {
+            return false;
+        }
+        String msg = e.getErrorMessage();
+        return msg != null && (msg.contains("role not exist") || msg.contains("need create role"));
     }
 
     /**

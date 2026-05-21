@@ -12,9 +12,9 @@ spring:
   # 数据库配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yu_picture
-    username: root
-    password: 123456
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:yu_picture}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
   # Redis 配置
   redis:
     database: 0
@@ -37,9 +37,9 @@ spring:
       yu_picture:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/yu_picture
-        username: root
-        password: 123456
+        url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:yu_picture}
+        username: ${DB_USERNAME:root}
+        password: ${DB_PASSWORD:root}
     rules:
       sharding:
         tables:

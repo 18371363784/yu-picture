@@ -1,6 +1,24 @@
 import { saveAs } from 'file-saver'
 
 /**
+ * 将 COS/CDN 等外链转为浏览器可用的绝对 URL。
+ * 若后端只存了裸域名或 IP（无协议），浏览器会按当前站点解析，导致裂图。
+ * 同时修正历史脏数据：如 host//path、https://host//path 的多余斜杠。
+ */
+export function toAbsolutePictureUrl(url?: string | null): string | undefined {
+  if (url == null || url === '') return undefined
+  let u = url.trim()
+  if (u.startsWith('//')) {
+    u = 'https:' + u
+  } else if (!/^https?:\/\//i.test(u)) {
+    u = u.replace(/^([^/]+)\/{2,}/, '$1/')
+    u = u.replace(/^\/+/, '')
+    u = 'https://' + u
+  }
+  return u.replace(/^(https?:\/\/[^/?#]+)\/{2,}/i, '$1/')
+}
+
+/**
  * 格式化文件大小
  * @param size
  */
@@ -17,10 +35,11 @@ export const formatSize = (size?: number) => {
  * @param fileName 要保存为的文件名
  */
 export function downloadImage(url?: string, fileName?: string) {
-  if (!url) {
+  const abs = toAbsolutePictureUrl(url)
+  if (!abs) {
     return
   }
-  saveAs(url, fileName)
+  saveAs(abs, fileName)
 }
 
 /**

@@ -4,7 +4,7 @@
       <!-- 图片预览 -->
       <a-col :sm="24" :md="16" :xl="18">
         <a-card title="图片预览">
-          <a-image :src="picture.url" style="max-height: 600px; object-fit: contain" />
+          <a-image :src="pictureDisplayUrl" style="max-height: 600px; object-fit: contain" />
         </a-card>
       </a-col>
       <!-- 图片信息区域 -->
@@ -81,7 +81,7 @@
         </a-card>
       </a-col>
     </a-row>
-    <ShareModal ref="shareModalRef" :link="shareLink" />
+    <ShareModal ref="shareModalRef" :link="shareLink || ''" />
   </div>
 </template>
 
@@ -96,7 +96,7 @@ import {
   ShareAltOutlined,
 } from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
-import { downloadImage, formatSize, toHexColor } from '@/utils'
+import { downloadImage, formatSize, toAbsolutePictureUrl, toHexColor } from '@/utils'
 import ShareModal from '@/components/ShareModal.vue'
 import { SPACE_PERMISSION_ENUM } from '@/constants/space.ts'
 
@@ -106,6 +106,8 @@ interface Props {
 
 const props = defineProps<Props>()
 const picture = ref<API.PictureVO>({})
+
+const pictureDisplayUrl = computed(() => toAbsolutePictureUrl(picture.value.url) ?? '')
 
 // 通用权限检查函数
 function createPermissionChecker(permission: string) {

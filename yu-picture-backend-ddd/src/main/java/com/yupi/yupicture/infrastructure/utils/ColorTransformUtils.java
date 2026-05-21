@@ -18,6 +18,9 @@ public class ColorTransformUtils {
      * @return
      */
     public static String getStandardColor(String color) {
+        if (color == null || color.isEmpty()) {
+            return color;
+        }
         // 每一种 rgb 色值都有可能只有一个 0，要转换为 00)
         // 如果是六位，不用转换，如果是五位，要给第三位后面加个 0
         // 示例：

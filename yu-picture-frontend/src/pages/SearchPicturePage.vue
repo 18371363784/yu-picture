@@ -6,7 +6,7 @@
       <template #cover>
         <img
           :alt="picture.name"
-          :src="picture.thumbnailUrl ?? picture.url"
+          :src="queryPictureCoverSrc"
           style="height: 180px; object-fit: cover"
         />
       </template>
@@ -46,6 +46,7 @@ import {
 } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import { useRoute } from 'vue-router'
+import { toAbsolutePictureUrl } from '@/utils'
 
 const route = useRoute()
 
@@ -53,6 +54,10 @@ const pictureId = computed(() => {
   return route.query?.pictureId
 })
 const picture = ref<API.PictureVO>({})
+
+const queryPictureCoverSrc = computed(
+  () => toAbsolutePictureUrl(picture.value.thumbnailUrl ?? picture.value.url) ?? '',
+)
 
 // 获取图片详情
 const fetchPictureDetail = async () => {

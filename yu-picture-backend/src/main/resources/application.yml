@@ -12,15 +12,15 @@ spring:
   # 数据库配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://124.222.72.208:3306/yu_picture
-    username: yu_picture_root
-    password: yu_picture_123456
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:yu_picture}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
   # Redis 配置
   redis:
     database: 0
-    host: 124.222.72.208
-    port: 6379
-    password: mww2004831
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
     timeout: 5000ms
     lettuce:
       pool:
@@ -44,9 +44,9 @@ spring:
       yu_picture:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/yu_picture
-        username: root
-        password: mww2004831
+        url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:yu_picture}
+        username: ${DB_USERNAME:root}
+        password: ${DB_PASSWORD:root}
     rules:
       sharding:
         tables:
@@ -91,11 +91,11 @@ knife4j:
 cos:
   client:
     host: 124.222.72.208
-    secretId: xxxx
-    secretKey: xxxx
+    secretId: ${COS_SECRET_ID:}
+    secretKey: ${COS_SECRET_KEY:}
     region: ap-nanjing
     bucket: mww-1429405134
 
 # 阿里云 AI 配置
 aliYunAi:
-  apiKey: test123
+  apiKey: ${ALIYUN_AI_API_KEY:}

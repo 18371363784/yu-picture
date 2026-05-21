@@ -9,7 +9,7 @@
     <a-row gutter="16">
       <a-col span="12">
         <h4>原始图片</h4>
-        <img :src="picture?.url" :alt="picture?.name" style="max-width: 100%" />
+        <img :src="sourceDisplayUrl" :alt="picture?.name" style="max-width: 100%" />
       </a-col>
       <a-col span="12">
         <h4>扩图结果</h4>
@@ -32,13 +32,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import {
   createPictureOutPaintingTaskUsingPost,
   getPictureOutPaintingTaskUsingGet,
   uploadPictureByUrlUsingPost,
 } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
+import { toAbsolutePictureUrl } from '@/utils'
 
 interface Props {
   picture?: API.PictureVO
@@ -47,6 +48,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const sourceDisplayUrl = computed(() => toAbsolutePictureUrl(props.picture?.url) ?? '')
 
 const resultImageUrl = ref<string>('')
 

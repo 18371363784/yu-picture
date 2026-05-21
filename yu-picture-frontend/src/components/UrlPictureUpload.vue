@@ -11,14 +11,15 @@
       </a-button>
     </a-input-group>
     <div class="img-wrapper">
-      <img v-if="picture?.url" :src="picture?.url" alt="avatar" />
+      <img v-if="displayUrl" :src="displayUrl" alt="图片预览" />
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { uploadPictureByUrlUsingPost } from '@/api/pictureController.ts'
+import { toAbsolutePictureUrl } from '@/utils'
 
 interface Props {
   picture?: API.PictureVO
@@ -29,6 +30,8 @@ interface Props {
 const props = defineProps<Props>()
 const fileUrl = ref<string>()
 const loading = ref<boolean>(false)
+
+const displayUrl = computed(() => toAbsolutePictureUrl(props.picture?.url) ?? '')
 
 /**
  * 上传图片

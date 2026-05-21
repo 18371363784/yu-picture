@@ -1,0 +1,148 @@
+/* 秒寻图仓 — 浅色极光 · 全局视觉变量与基础样式（不涉及业务逻辑） */
+
+:root {
+  --yx-font-sans: 'Plus Jakarta Sans', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  --yx-aurora-1: #e8f4ff;
+  --yx-aurora-2: #f0e8ff;
+  --yx-aurora-3: #e6fffa;
+  --yx-aurora-4: #fff5f0;
+  --yx-glass-bg: rgba(255, 255, 255, 0.55);
+  --yx-glass-border: rgba(255, 255, 255, 0.65);
+  --yx-shadow-sm: 0 2px 8px rgba(99, 102, 241, 0.06);
+  --yx-shadow-md: 0 8px 32px rgba(99, 102, 241, 0.1), 0 2px 8px rgba(15, 23, 42, 0.04);
+  --yx-shadow-lg: 0 20px 50px rgba(99, 102, 241, 0.12), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --yx-radius: 14px;
+  --yx-radius-lg: 20px;
+  --yx-text-title: #0f172a;
+  --yx-text-body: #475569;
+  --yx-text-muted: #94a3b8;
+  --yx-primary: #6366f1;
+  --yx-primary-soft: rgba(99, 102, 241, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  font-family: var(--yx-font-sans);
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+  color: var(--yx-text-body);
+  background: fixed
+    radial-gradient(1200px 600px at 10% -10%, rgba(186, 230, 253, 0.9) 0%, transparent 55%),
+    radial-gradient(900px 500px at 90% 10%, rgba(233, 213, 255, 0.85) 0%, transparent 50%),
+    radial-gradient(800px 480px at 50% 100%, rgba(204, 251, 241, 0.75) 0%, transparent 45%),
+    linear-gradient(165deg, var(--yx-aurora-1) 0%, #fafbff 35%, var(--yx-aurora-2) 70%, #f8fafc 100%);
+  min-height: 100vh;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.yx-page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--yx-text-title);
+  line-height: 1.25;
+  margin: 0 0 0.5rem;
+}
+
+.yx-page-sub {
+  font-size: 0.9375rem;
+  color: var(--yx-text-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.65;
+}
+
+.yx-glass-panel {
+  background: var(--yx-glass-bg);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid var(--yx-glass-border);
+  border-radius: var(--yx-radius-lg);
+  box-shadow: var(--yx-shadow-md);
+}
+
+.yx-page-shell {
+  border-radius: var(--yx-radius-lg);
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: var(--yx-shadow-sm);
+  padding: 1.5rem 1.75rem;
+}
+
+.ant-btn:not(:disabled) {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.25s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ant-btn-primary:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+}
+
+.ant-btn-default:not(:disabled):hover {
+  transform: translateY(-1px);
+  border-color: var(--yx-primary);
+  color: var(--yx-primary);
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-search-button {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-input:focus {
+  box-shadow: 0 0 0 3px var(--yx-primary-soft);
+}
+
+.yx-table-wrap .ant-spin-nested-loading {
+  min-height: 200px;
+}
+
+.yx-table-wrap .ant-table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.yx-table-wrap .ant-table-thead > tr > th {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.yx-empty-illustrated .ant-empty-image {
+  height: 120px;
+  margin-bottom: 12px;
+}
+
+.yx-empty-illustrated .ant-empty-description {
+  color: var(--yx-text-muted);
+  font-size: 0.9375rem;
+  letter-spacing: 0.03em;
+}
+
+.yx-pagination-bar {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
