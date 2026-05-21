@@ -3,9 +3,10 @@
     <h2 class="yx-page-title">
       {{ route.query?.id ? '修改图片' : '创建图片' }}
     </h2>
-    <a-typography-paragraph v-if="spaceId" type="secondary">
+    <a-typography-paragraph v-if="spaceId" type="secondary" class="yx-page-sub">
       保存至空间：<a :href="`/space/${spaceId}`" target="_blank">{{ spaceId }}</a>
     </a-typography-paragraph>
+    <div class="yx-divider-dot"><span /><span /></div>
     <!-- 选择上传方式 -->
     <a-tabs v-model:activeKey="uploadType">
       <a-tab-pane key="file" tab="文件上传">

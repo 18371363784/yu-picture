@@ -1,6 +1,8 @@
 <template>
-  <div id="addPictureBatchPage">
-    <h2 style="margin-bottom: 16px">批量创建</h2>
+  <div id="addPictureBatchPage" class="yx-page-shell">
+    <h2 class="yx-page-title">批量创建图片</h2>
+    <p class="yx-page-sub">通过关键词批量抓取并创建图片</p>
+    <div class="yx-divider-dot"><span /><span /></div>
     <!-- 图片信息表单 -->
     <a-form name="formData" layout="vertical" :model="formData" @finish="handleSubmit">
       <a-form-item name="searchText" label="关键词">

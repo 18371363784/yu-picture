@@ -1,7 +1,7 @@
 <template>
   <div id="pictureManagePage" class="yx-page-shell yx-table-wrap">
     <a-flex justify="space-between">
-      <h2>图片管理</h2>
+      <h2 class="yx-page-title">图片管理</h2>
       <a-space>
         <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
         <a-button type="primary" href="/add_picture/batch" target="_blank" ghost>+ 批量创建图片</a-button>

@@ -1,14 +1,14 @@
 <template>
-  <div id="spaceAnalyzePage">
-    <h2>
-      空间图库分析 -
+  <div id="spaceAnalyzePage" class="yx-page-shell">
+    <h2 class="yx-page-title">空间图库分析</h2>
+    <p class="yx-page-sub">
       <span v-if="queryAll">全部空间</span>
       <span v-else-if="queryPublic">公共图库</span>
       <span v-else>
         <a :href="`/space/${spaceId}`" target="_blank">空间 id：{{ spaceId }}</a>
       </span>
-    </h2>
-    <div style="margin-bottom: 16px" />
+    </p>
+    <div class="yx-divider-dot"><span /><span /></div>
     <a-row :gutter="[16, 16]">
       <!-- 空间使用分析 -->
       <a-col :xs="24" :md="12">

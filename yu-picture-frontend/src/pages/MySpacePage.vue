@@ -1,6 +1,10 @@
 <template>
-  <div id="mySpacePage">
-    <p>正在跳转，请稍后。。。</p>
+  <div id="mySpacePage" class="yx-page-shell" style="text-align:center; padding-top: 80px; padding-bottom: 80px">
+    <a-spin size="large" />
+    <p style="margin-top: 24px; color: var(--yx-text-muted); font-size: 1rem">
+      正在跳转到你的空间，请稍候...
+    </p>
+    <div class="yx-divider-dot" style="max-width:200px; margin:20px auto"><span /><span /></div>
   </div>
 </template>
 

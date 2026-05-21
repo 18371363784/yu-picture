@@ -1,5 +1,6 @@
 <template>
   <div id="userManagePage" class="yx-page-shell yx-table-wrap">
+    <h2 class="yx-page-title">用户管理</h2>
     <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
       <a-form-item label="账号">

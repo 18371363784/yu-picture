@@ -1,8 +1,9 @@
 <template>
-  <div id="addSpacePage">
-    <h2 style="margin-bottom: 16px">
+  <div id="addSpacePage" class="yx-page-shell">
+    <h2 class="yx-page-title">
       {{ route.query?.id ? '修改' : '创建' }} {{ SPACE_TYPE_MAP[spaceType] }}
     </h2>
+    <p class="yx-page-sub">配置空间的基本信息</p>
     <!-- 空间信息表单 -->
     <a-form name="spaceForm" layout="vertical" :model="spaceForm" @finish="handleSubmit">
       <a-form-item name="spaceName" label="空间名称">

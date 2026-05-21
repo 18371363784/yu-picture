@@ -1,7 +1,9 @@
 <template>
   <div id="spaceManagePage" class="yx-page-shell yx-table-wrap">
     <a-flex justify="space-between">
-      <h2>空间管理</h2>
+      <div>
+        <h2 class="yx-page-title">空间管理</h2>
+      </div>
       <a-space>
         <a-button type="primary" href="/add_space" target="_blank">+ 创建空间</a-button>
         <a-button type="primary" ghost href="/space_analyze?queryPublic=1" target="_blank"

@@ -31,7 +31,10 @@
       </a-space>
     </div>
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" />
+    <div class="picture-section">
+      <div class="yx-divider-dot"><span /><span /></div>
+      <PictureList :dataList="dataList" :loading="loading" />
+    </div>
     <!-- 分页 -->
     <a-pagination
       class="yx-pagination-bar"
@@ -187,5 +190,9 @@ onMounted(() => {
 
 #homePage .yx-pagination-bar {
   text-align: right;
+}
+
+#homePage .picture-section {
+  margin-top: 0.5rem;
 }
 </style>
