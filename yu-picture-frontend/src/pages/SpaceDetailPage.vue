@@ -33,6 +33,12 @@
           空间分析
         </a-button>
         <a-button v-if="canEditPicture" :icon="h(EditOutlined)" @click="doBatchEdit"> 批量编辑</a-button>
+        <a-button v-if="canManageSpaceUser" :icon="h(EditOutlined)" @click="doEditSpaceName">
+          修改名称
+        </a-button>
+        <a-button v-if="canManageSpaceUser" danger :icon="h(DeleteOutlined)" @click="doDeleteSpace">
+          删除空间
+        </a-button>
         <a-tooltip
           :title="`占用空间 ${formatSize(space.totalSize)} / ${formatSize(space.maxSize)}`"
         >
@@ -75,13 +81,24 @@
       :pictureList="dataList"
       :onSuccess="onBatchEditPictureSuccess"
     />
+    <a-modal
+      v-model:open="editNameModalVisible"
+      title="修改空间名称"
+      @ok="handleEditSpaceName"
+      :confirm-loading="editNameLoading"
+      ok-text="保存"
+      cancel-text="取消"
+    >
+      <a-input v-model:value="newSpaceName" placeholder="请输入新名称" :maxlength="30" />
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, h, onMounted, ref, watch } from 'vue'
-import { getSpaceVoByIdUsingGet } from '@/api/spaceController.ts'
-import { message } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
+import { getSpaceVoByIdUsingGet, editSpaceUsingPost, deleteSpaceUsingPost } from '@/api/spaceController.ts'
+import { message, Modal } from 'ant-design-vue'
 import {
   listPictureVoByPageUsingPost,
   searchPictureByColorUsingPost,
@@ -92,7 +109,7 @@ import PictureSearchForm from '@/components/PictureSearchForm.vue'
 import { ColorPicker } from 'vue3-colorpicker'
 import 'vue3-colorpicker/style.css'
 import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
-import { BarChartOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons-vue'
+import { BarChartOutlined, DeleteOutlined, EditOutlined, TeamOutlined } from '@ant-design/icons-vue'
 import { SPACE_PERMISSION_ENUM, SPACE_TYPE_MAP } from '../constants/space.ts'
 
 interface Props {
@@ -233,6 +250,66 @@ watch(
     fetchData()
   },
 )
+
+const router = useRouter()
+
+// ---- 修改空间名称 ----
+const editNameModalVisible = ref(false)
+const newSpaceName = ref('')
+const editNameLoading = ref(false)
+
+const doEditSpaceName = () => {
+  newSpaceName.value = space.value.spaceName ?? ''
+  editNameModalVisible.value = true
+}
+
+const handleEditSpaceName = async () => {
+  if (!newSpaceName.value?.trim()) {
+    message.warning('空间名称不能为空')
+    return
+  }
+  editNameLoading.value = true
+  try {
+    const res = await editSpaceUsingPost({
+      id: space.value.id,
+      spaceName: newSpaceName.value.trim(),
+    })
+    if (res.data.code === 0) {
+      message.success('空间名称修改成功')
+      editNameModalVisible.value = false
+      fetchSpaceDetail()
+    } else {
+      message.error(res.data.message || '修改失败')
+    }
+  } catch (e: any) {
+    message.error('修改失败：' + e.message)
+  }
+  editNameLoading.value = false
+}
+
+// ---- 删除空间 ----
+const doDeleteSpace = () => {
+  Modal.confirm({
+    title: '确认删除空间',
+    content: `确定要删除「${space.value.spaceName}」吗？空间内所有图片将被永久删除，此操作不可恢复。`,
+    okText: '确认删除',
+    okType: 'danger',
+    cancelText: '取消',
+    async onOk() {
+      try {
+        const res = await deleteSpaceUsingPost({ id: space.value.id })
+        if (res.data.code === 0) {
+          message.success('空间已删除')
+          router.replace('/')
+        } else {
+          message.error(res.data.message || '删除失败')
+        }
+      } catch (e: any) {
+        message.error('删除失败：' + e.message)
+      }
+    },
+  })
+}
 </script>
 
 <style scoped>
