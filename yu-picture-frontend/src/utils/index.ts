@@ -30,7 +30,7 @@ export const formatSize = (size?: number) => {
 }
 
 /**
- * 下载图片
+ * 下载图片（统一转为 PNG 格式，确保在所有设备上可打开）
  * @param url 图片下载地址
  * @param fileName 要保存为的文件名
  */
@@ -39,7 +39,27 @@ export function downloadImage(url?: string, fileName?: string) {
   if (!abs) {
     return
   }
-  saveAs(abs, fileName)
+  const img = new Image()
+  img.crossOrigin = 'anonymous'
+  img.onload = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = img.naturalWidth
+    canvas.height = img.naturalHeight
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      return
+    }
+    ctx.drawImage(img, 0, 0)
+    canvas.toBlob((blob) => {
+      if (blob) {
+        saveAs(blob, (fileName || 'image') + '.png')
+      }
+    }, 'image/png')
+  }
+  img.onerror = () => {
+    saveAs(abs, fileName)
+  }
+  img.src = abs
 }
 
 /**
